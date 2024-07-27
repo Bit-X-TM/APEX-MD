@@ -1,7 +1,19 @@
-FROM quay.io/souravkl11/rgnk-v3:latest
+FROM node:lts-buster
 
-RUN git clone https://github.com/souravkl11/raganork-md /railway/Raganork
-WORKDIR /railway/Raganork
-ENV TZ=Asia/Kolkata
-RUN yarn install --network-concurrency 1
-CMD ["node", "index.js"]
+RUN apt-get update && \
+  apt-get install -y \
+  ffmpeg \
+  imagemagick \
+  webp && \
+  apt-get upgrade -y && \
+  rm -rf /var/lib/apt/lists/*
+
+COPY package.json .
+
+RUN npm install && npm install -g qrcode-terminal pm2
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["npm", "start"]
